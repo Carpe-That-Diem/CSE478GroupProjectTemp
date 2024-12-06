@@ -78,15 +78,34 @@ body {
     display: flex;
     flex-direction: column;
     padding: 10px;
-    border: 1px solid #007BFF;
-    /* Blue accent */
-    margin-right: 20px;
-    flex-shrink: 0;
+    border: 1px solid #007BFF; /* Blue accent */
+    margin-bottom: 20px; /* Add spacing between boxes */
     background-color: white;
     border-radius: 5px;
     box-sizing: border-box;
     color: black;
 }
+
+.sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #007BFF; /* Blue accent for headers */
+    font-weight: bold;
+    text-align: center; /* Center-align headers */
+}
+
+.sidebar select {
+    width: 100%; /* Full-width dropdown */
+    padding: 5px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #007BFF; /* Blue accent */
+    border-radius: 3px; /* Rounded corners */
+    background-color: white;
+    color: black;
+}
+
 
 .btn {
     margin: 10px 0;
