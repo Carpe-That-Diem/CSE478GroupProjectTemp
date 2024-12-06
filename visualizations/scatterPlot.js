@@ -46,7 +46,7 @@ export function createScatterPlot(svg, data, options) {
   // Add Y axis label
   svg.append("text")
     .attr("transform", "rotate(-90)")
-    .attr("y", margin.left / 4)
+    .attr("y", margin.left / 1.3)
     .attr("x", 0 - (height / 2))
     .attr("dy", "-2em")
     .style("text-anchor", "middle")
