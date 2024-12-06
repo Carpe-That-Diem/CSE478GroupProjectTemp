@@ -1,3 +1,4 @@
+import { loadCSVData } from './csvLoader.js';
 import { filterByInterval, identifyAttributes } from './dataProcessor.js';
 import { createVisualization } from './Visualization.js';
 
