@@ -15,6 +15,7 @@ export function createScatterPlot(svg, data, options) {
     .range([height, 0])
     .domain(d3.extent(data, d => +d[options["Y Axis"]])).nice();
 
+
   // Create color scale (using the selected "Color" field from options)
   const color = d3.scaleOrdinal(d3.schemeCategory10);
   const colorDomain = Array.from(new Set(data.map(d => d[options["Color"]]))); // Unique categories
@@ -46,7 +47,7 @@ export function createScatterPlot(svg, data, options) {
   // Add Y axis label
   svg.append("text")
     .attr("transform", "rotate(-90)")
-    .attr("y", margin.left / 4)
+    .attr("y", margin.left / 1.3)
     .attr("x", 0 - (height / 2))
     .attr("dy", "-2em")
     .style("text-anchor", "middle")
