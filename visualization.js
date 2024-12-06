@@ -12,7 +12,7 @@ export function createVisualization(vizType, data, options) {
     const svg = visualizationArea
         .append("svg")
         .attr("width", 1200)
-        .attr("height", 700);
+        .attr("height", 800);
 
     switch (vizType) {
         case "bar":
