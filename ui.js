@@ -134,7 +134,7 @@ export class UI {
           scatter: [
             { label: "X Axis", source: this.numerical },
             { label: "Y Axis", source: this.numerical },
-            { label: "Color", source: this.numerical }
+            { label: "Color", source: this.categorical }
           ],
           pie: [
             { label: "Category", source: this.categorical },
