@@ -1,33 +1,46 @@
 export function createTreemapWithPie(svg, data, options) {
-  const width = +svg.attr("width");
-  const height = +svg.attr("height");
+  const outerWidth = +svg.attr("width");
+  const outerHeight = +svg.attr("height");
 
-  svg.selectAll("*").remove(); // Clear any previous visualization
+  const margin = { top: 20, right: 20, bottom: 20, left: 20 }; // Add margins
+  const width = outerWidth - margin.left - margin.right;
+  const height = outerHeight - margin.top - margin.bottom;
+
+  // Create a group element for margins
+  const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
 
   // Tooltip setup
   const tooltip = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("position", "absolute")
     .style("background", "#f9f9f9")
-    .style("border", "1px solid #d3d3d3")
+    .style("border", "1px solid white")
     .style("border-radius", "5px")
     .style("padding", "10px")
     .style("pointer-events", "none")
     .style("opacity", 0);
 
+  // Group and aggregate data by "Group By" field
+  const groupedData = d3.group(data, d => d[options["Group By"]]);
+
+  const treemapData = Array.from(groupedData, ([key, group]) => {
+    const size = group.length; // Block size based on the count of entries
+    return size > 0 ? { key, size, details: group } : null; // Exclude empty groups
+}).filter(d => d !== null);
+
+
+  const root = d3.hierarchy({ name: "root", children: treemapData })
+    .sum(d => d.size);
+
   // Treemap layout configuration
   const treemap = d3.treemap()
-    .size([width, height])
+    .size([width, height]) // Use adjusted dimensions
     .padding(5);
-
-  // Process data for treemap
-  const root = d3.hierarchy({ name: "root", children: data })
-    .sum(d => +d[options["Size"]]) // Use "Size" for rectangle area
-    .sort((a, b) => b.value - a.value); // Sort to prioritize larger areas
 
   treemap(root);
 
-  const nodes = svg.selectAll(".node")
+  const nodes = g.selectAll(".node")
     .data(root.leaves())
     .enter()
     .append("g")
@@ -43,8 +56,8 @@ export function createTreemapWithPie(svg, data, options) {
     .on("mouseover", (event, d) => {
       tooltip.transition().duration(200).style("opacity", 1);
       tooltip.html(`
-        <strong>Group:</strong> ${d.data[options["Group By"]]}<br>
-        <strong>Size:</strong> ${d.value}
+        <strong>Group:</strong> ${d.data.key}<br>
+        <strong>Size:</strong> ${d.data.size}
       `)
         .style("left", `${event.pageX + 10}px`)
         .style("top", `${event.pageY}px`);
@@ -53,62 +66,61 @@ export function createTreemapWithPie(svg, data, options) {
       tooltip.transition().duration(200).style("opacity", 0);
     });
 
-  // Draw Pie Charts in each rectangle
+  // Add Pie Charts to Each Block
   nodes.each(function (d) {
     const group = d3.select(this);
     const rectWidth = d.x1 - d.x0;
     const rectHeight = d.y1 - d.y0;
-    const radius = Math.min(rectWidth, rectHeight) / 3; // Ensure the pie chart fits within the rectangle
+    const radius = Math.min(rectWidth, rectHeight) / 3;
 
-    // Get data for the current block
-    const groupName = d.data[options["Group By"]];
-    const filteredData = data.filter(row => row[options["Group By"]] === groupName);
+    // Extract data for the current block
+    const details = d.data.details;
+    const pieData = d3.group(details, item => item[options["Category"]]);
+    const aggregatedPieData = Array.from(pieData, ([key, group]) => ({
+        key,
+        value: d3.sum(group, g => +g[options["Value"]])
+    })).filter(d => d.value > 0); // Filter out zero values
 
-    // Aggregate values for the pie chart based on "Category" and "Value"
-    const groupedData = d3.group(filteredData, row => row[options["Category"]]);
-    const pieData = Array.from(groupedData, ([key, group]) => ({
-      key,
-      value: d3.sum(group, row => +row[options["Value"]])
-    }));
+    // Check if there are any valid values left after filtering
+    if (aggregatedPieData.length === 0) {
+        return; // Skip drawing the pie chart if no valid slices
+    }
 
-    // Create Pie Chart
-    const pie = d3.pie()
-      .value(d => d.value)
-      .sort(null);
-
-    const arc = d3.arc()
-      .innerRadius(0)
-      .outerRadius(radius);
+    // Pie Chart
+    const pie = d3.pie().value(d => d.value);
+    const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
     const pieGroup = group.append("g")
-      .attr("transform", `translate(${rectWidth / 2}, ${rectHeight / 2})`);
+        .attr("transform", `translate(${rectWidth / 2}, ${rectHeight / 2})`);
 
     pieGroup.selectAll("path")
-      .data(pie(pieData))
-      .enter()
-      .append("path")
-      .attr("d", arc)
-      .attr("fill", (d, i) => d3.schemeCategory10[i % 10]) // Assign colors based on category
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .on("mouseover", (event, d) => {
-        tooltip.transition().duration(200).style("opacity", 1);
-        tooltip.html(`
-          <strong>Category:</strong> ${d.data.key}<br>
-          <strong>Value:</strong> ${d.data.value}<br>
-          <strong>Group:</strong> ${groupName}
-        `)
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY}px`);
-      })
-      .on("mouseout", () => {
-        tooltip.transition().duration(200).style("opacity", 0);
-      });
-  });
+        .data(pie(aggregatedPieData))
+        .enter()
+        .append("path")
+        .attr("d", arc)
+        .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .on("mouseover", (event, d) => {
+            tooltip.transition().duration(200).style("opacity", 1);
+            tooltip.html(`
+              <strong>Category:</strong> ${d.data.key}<br>
+              <strong>${options["Value"]} Value:</strong> ${d.data.value}
 
-  // Add chart title
+            `)
+              .style("left", `${event.pageX + 10}px`)
+              .style("top", `${event.pageY}px`);
+        })
+        .on("mouseout", () => {
+            tooltip.transition().duration(200).style("opacity", 0);
+        });
+});
+
+
+
+  // Add Chart Title
   svg.append("text")
-    .attr("x", width / 2)
+    .attr("x", outerWidth / 2)
     .attr("y", 20)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")

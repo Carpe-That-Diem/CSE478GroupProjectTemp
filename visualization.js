@@ -38,7 +38,7 @@ export function createVisualization(vizType, data, options) {
                 .attr("x", 400)
                 .attr("y", 250)
                 .attr("text-anchor", "middle")
-                .text("No Valid Viz Selected!");
+                .text("Default Selected");
     }
 }
 

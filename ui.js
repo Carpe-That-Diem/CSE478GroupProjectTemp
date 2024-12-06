@@ -95,18 +95,26 @@ export class UI {
         if (this.vizTypeSelect) {
             this.vizTypeSelect.addEventListener("change", () => {
                 const selectedVizType = this.vizTypeSelect.value;
+    
+                if (selectedVizType === "default") {
+                    // Clear visualization if "Please choose option" is selected
+                    d3.select(".visualization").selectAll("*").remove();; // Remove all child elements from the visualization area
+                    return;
+                }
+    
                 this.updateVizOptions(selectedVizType);
                 this.refreshVisualization();
             });
         }
-
+    
         document.getElementById("options-container").addEventListener("change", () => {
             this.refreshVisualization();
         });
-
+    
         // Initial data load
         this.loadData();
     }
+    
     
     loadData() {
         loadCSVData("/data/Manchester_City_Standard_Stats_By_Season.csv", (data) => {
@@ -142,7 +150,6 @@ export class UI {
           ],
           innovative: [
             { label: "Group By", source: this.categorical },
-            { label: "Size", source: this.numerical},
             { label: "Category", source: this.categorical },
             { label: "Value", source: this.numerical }
           ],
