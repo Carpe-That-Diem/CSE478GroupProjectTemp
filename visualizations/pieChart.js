@@ -1,6 +1,8 @@
-export function createPieChart(svg, data, options) {
-  const width = +svg.attr("width") - 100;
-  const height = +svg.attr("height") - 100;
+export function createPieChart(svg, data, options) 
+
+{
+  const width = +svg.attr("width");
+  const height = +svg.attr("height");
   const radius = Math.min(width, height) / 3;
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -8,8 +10,6 @@ export function createPieChart(svg, data, options) {
   const pie = d3.pie()
     .value(d => d.value)
     .sort(null);
-
-  d3.selectAll(".tooltip").remove();
 
   var div = d3.select("body").append("div")
     .attr("class", "tooltip")

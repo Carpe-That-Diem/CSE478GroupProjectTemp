@@ -112,5 +112,5 @@ export function createStackedAreaChart(svg, data, options) {
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
-    .text(`Stacked Area Chart: ${options["Values"]} by ${options["Group By"]} and ${options["Stack By"]}`);
+    .text(`${options["Values"]} by ${options["Group By"]} and ${options["Stack By"]}`);
 }
