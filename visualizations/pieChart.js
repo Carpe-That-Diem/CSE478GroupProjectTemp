@@ -9,6 +9,20 @@ export function createPieChart(svg, data, options) {
     .value(d => d.value)
     .sort(null);
 
+  d3.selectAll(".tooltip").remove();
+
+  var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0)
+    .style("display", "block")
+    .style("position", "absolute") 
+    .style("background-color", "rgba(0, 0, 0, 0.7)")
+    .style("color", "#fff") 
+    .style("padding", "10px")
+    .style("border-radius", "5px")
+    .style("pointer-events", "none") 
+    .style("z-index", "10000"); 
+
   const arc = d3.arc()
     .innerRadius(0)
     .outerRadius(radius - 40);
@@ -18,74 +32,83 @@ export function createPieChart(svg, data, options) {
     .outerRadius(radius - 80);
 
   const g = svg.append("g")
-    .attr("transform", `translate(${width / 3},${height / 2})`);
+    .attr("transform", `translate(${width / 2},${height / 2})`);
 
-  const groupedData = d3.group(data, d => d[options.Category]);
+  const values = data.map(d => +d[options.Value]);
+  console.log(values);
+  const uniqueValues = [...new Set(values)];
+  const numBins = Math.min(uniqueValues.length, 5);
+  const min = d3.min(values);
+  const max = d3.max(values);
 
-  const pieData = Array.from(groupedData, ([key, group]) => ({
-    key,
-    value: d3.sum(group, d => +d[options.Value])
+  const binScale = d3.scaleQuantize()
+    .domain([min, max]) 
+    .range(d3.range(numBins));
+
+  const bins = new Array(numBins).fill(0);
+  values.forEach(value => {
+    const binIndex = binScale(value); 
+    bins[binIndex] += 1;
+  });
+    
+  const totalDataPoints = values.length;
+  const percentages = bins.map(binCount => (binCount / totalDataPoints) * 100);
+
+  const binLabels = d3.range(numBins).map((binIndex) => {
+    const start = binScale.invertExtent(binIndex)[0];
+    const end = binScale.invertExtent(binIndex)[1];
+    return `${Math.floor(start)} - ${Math.floor(end)}`;
+  });
+
+  const pieData = d3.range(numBins).map((binIndex, i) => ({
+    key: binLabels[i],
+    value: percentages[i]
   }));
-  console.log(pieData.length);
+  
+  console.log(pieData);
+  
   const arcs = g.selectAll(".arc")
     .data(pie(pieData))
     .enter().append("g")
     .attr("class", "arc");
 
+    
   arcs.append("path")
     .attr("d", arc)
-    .style("fill", d => color(d.data.key))
+    .style("fill", (d, i) => color(i)) 
     .style("stroke", "white")
     .style("stroke-width", "1px")
-    .style("opacity", 0.8);
+    .style("opacity", 0.8)  
+    .on("mouseover", function(event,d) {
+      div.style("opacity", .9);
+      div.html(
+          options.Value + ": " + d.data.key + "<br/>" +
+          "Percentage: " + d.data.value
+      )
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px");
+    })
+    .on("mousemove", d=> {
+        div.style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px")
+            div.style("opacity", .9);;
+    })
+    .on("mouseout", d => {
+        div.style("opacity", 0);
+    });
 
-  // arcs.append("text")
-  //   .attr("transform", d => `translate(${labelArc.centroid(d)})`)
-  //   .attr("dy", ".35em")
-  //   .style("text-anchor", "middle")
-  //   .style("font-size", "12px")
-  //   .style("fill", "white")
-  //   .text(d => {
-  //     const percentage = ((d.endAngle - d.startAngle) / (2 * Math.PI) * 100).toFixed(1);
-  //     return percentage > 5 ? `${d.data.key} (${percentage}%)` : '';
-  //   });
-
-  // Create a scrollable container for the legend
-  // Create a scrollable container using foreignObject (HTML container inside SVG)
-  const legendContainer = svg.append("foreignObject")
-    .attr("x", width - 500)       // Position the container group for the legend
-    .attr("y", 70)
-    .attr("width", 500)           // Set the width for the scrollable area
-    .attr("height", height-100)          // Set the max height for the scrollable area
-    .style("overflow", "hidden"); // Hide overflow for the outer container
-
-  // Append a div inside the foreignObject to hold the legend items
-  const legendDiv = legendContainer.append("xhtml:div")
-      .style("height", "100%")        // Take up all available height
-      .style("overflow-y", "scroll")    // Enable vertical scrolling within the div
-      .style("display", "block")      // Ensure div behaves as block-level element
-      .style("max-height", height-100)   // Limit the height to the container height
-      .style("width", "100%");        // Make div take up the full width of the foreignObject
-
-  // Create the legend items
-  const legend = legendDiv.selectAll(".legend")
-      .data(pieData)
-      .enter().append("div")
-      .attr("class", "legend-item")
-      .style("display", "flex")          // Use flexbox layout for color square and text
-      .style("align-items", "center")    // Align items vertically
-      .style("margin-bottom", "5px")    // Add space between items
-      .style("margin-left", "200px");
-
-  // Add color squares and labels
-  legend.append("div")  // Color square
-      .style("width", "20px")
-      .style("height", "20px")
-      .style("background-color", d => color(d.key));  // Set color from your data
-
-  legend.append("span")  // Label
-      .style("margin-left", "10px")
-      .style("white-space", "nowrap")  // Prevent text wrapping in the legend
-      .text(d => d.key);  // Set the label from your data (assuming `d.key` contains the legend label)
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", 80)
+      .attr("text-anchor", "middle")
+      .style("font-size", "16px")
+      .style("font-weight", "bold")
+      .text(`Player ${options.Value} Distribution`);
+    svg.append("text")
+      .attr("x", width / 2)
+      .attr("y", 100)
+      .attr("text-anchor", "middle")
+      .style("font-size", "14px")
+      .text(`Hover over a slice of the chart for more info about the category`);
 }
 

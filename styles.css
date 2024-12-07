@@ -179,3 +179,14 @@ body {
     border: 1px solid #007BFF;
     /* Blue accent */
 }
+
+div.tooltip {
+    position: absolute;
+    padding: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    pointer-events: none;
+    font-size: 12px;
+    z-index: 1000;
+}

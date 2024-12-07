@@ -145,7 +145,6 @@ export class UI {
             { label: "Color", source: this.categorical }
           ],
           pie: [
-            { label: "Category", source: this.categorical },
             { label: "Value", source: this.numerical }
           ],
           innovative: [
