@@ -4,6 +4,8 @@ import { createVisualization } from './Visualization.js';
 
 export class UI {
     constructor() {
+        // Define intervals for the timeline
+        // Each interval represents a specific era
         this.intervals = [
             "2003-2007",
             "2007-2011",
@@ -12,6 +14,7 @@ export class UI {
             "2019-2023"
         ];
         this.currentIntervalIndex = 0;
+        // Grab the HTML elements for future use
         this.yearDisplay = document.getElementById("year-display");
         this.prevButton = document.getElementById("prev-button");
         this.nextButton = document.getElementById("next-button");
@@ -20,6 +23,7 @@ export class UI {
         this.categorical = null;
         this.numerical = null;
 
+        // Hard coded content for the visualization
         this.intervalContent = {
             "2003-2007": {
                 heading: "Rebuilding and Stabilization",
@@ -42,86 +46,111 @@ export class UI {
                 body: "This era cemented Manchester City’s place among the footballing elite. The 2022 signing of Erling Haaland added a prolific scorer to an already world-class squad. In 2023, City achieved a historic Treble, winning the Premier League, FA Cup, and their first UEFA Champions League title. These accomplishments underscored their dominance and marked one of the most successful periods in the club’s history."
             }
         };
-
     }
 
+    // Initializes the navigation functionality
     initializeYearNavigation() {
+        // Make sure the displayed interval matches the current interval
         this.updateYearDisplay();
 
+        // Check for the existence of the buttons
         if (this.prevButton && this.nextButton) {
+            // For the previous button
             this.prevButton.addEventListener("click", () => {
+                // Do not go past the first interval
                 if (this.currentIntervalIndex > 0) {
+                    // Decrease the interval
                     this.currentIntervalIndex--;
+                    // Make sure the displayed interval matches the current interval
                     this.updateYearDisplay();
+                    // Refresh the visualization for the current interval
                     this.refreshVisualization();
                 }
             });
 
+            // For the next button
             this.nextButton.addEventListener("click", () => {
+                // Do not go past the last interval
                 if (this.currentIntervalIndex < this.intervals.length - 1) {
+                    // Increase the interval
                     this.currentIntervalIndex++;
+                    // Make sure the displayed interval matches the current interval
                     this.updateYearDisplay();
+                    // Refresh the visualization for the current interval
                     this.refreshVisualization();
                 }
             });
         }
     }
 
+    //Match the displayed interval to the current interval
     updateYearDisplay() {
+        // Check if the year exists
         if (this.yearDisplay) {
+            // Update the display to show the current interval
             this.yearDisplay.textContent = this.intervals[this.currentIntervalIndex];
         }
 
-        // Update heading and body text dynamically
+        // Update the content dynamically
         const interval = this.intervals[this.currentIntervalIndex];
         const content = this.intervalContent[interval];
 
+        // Grab the elements where the content will be displayed
         const headingElement = document.querySelector(".heading-text h2");
         const bodyElement = document.querySelector(".heading-text p");
 
+        // Update the content
         if (content) {
             headingElement.textContent = content.heading;
             bodyElement.textContent = content.body;
         }
 
+        // Do not print hte interval if it is at its extremes
         if (this.prevButton && this.nextButton) {
             this.prevButton.style.visibility = this.currentIntervalIndex === 0 ? "hidden" : "visible";
             this.nextButton.style.visibility = this.currentIntervalIndex === this.intervals.length - 1 ? "hidden" : "visible";
         }
     }
 
-    initializeVisualizationDropdown() {
-        if (this.vizTypeSelect) {
-            this.vizTypeSelect.addEventListener("change", () => {
-                const selectedVizType = this.vizTypeSelect.value;
 
+    initializeVisualizationDropdown() {
+        // Does the viz exist?
+        if (this.vizTypeSelect) {
+            // For the viz choice
+            this.vizTypeSelect.addEventListener("change", () => {
+                // Grab the viz currently selected by the user
+                const selectedVizType = this.vizTypeSelect.value;
+                // Remove items in the visualziation area in all other scenarios
                 if (selectedVizType === "default") {
-                    // Clear visualization if "Please choose option" is selected
-                    d3.select(".visualization").selectAll("*").remove();; // Remove all child elements from the visualization area
+                    d3.select(".visualization").selectAll("*").remove();; 
                     return;
                 }
-
+                // update the viz specific options based on the viz selected
                 this.updateVizOptions(selectedVizType);
+                // Reflect the viz selected by the user
                 this.refreshVisualization();
             });
         }
 
+        // If the user selects a viz type option refresh the viz
         document.getElementById("options-container").addEventListener("change", () => {
             this.refreshVisualization();
         });
 
-        // Initial data load
+        // load the data on move to a new visualization
         this.loadData();
     }
 
     loadData() {
+        // Use the helper function
         loadCSVData("./data/Manchester_City_Standard_Stats_By_Season.csv", (data) => {
+            // make the data in the dataset useable for the other visualziations
             this.data = data;
             const { categorical, numerical } = identifyAttributes(data);
             this.categorical = categorical;
             this.numerical = numerical;
 
-            // Initial visualization setup
+            // Send the processed data over to the viz options and viz area
             const selectedVizType = this.vizTypeSelect.value;
             this.updateVizOptions(selectedVizType);
             this.refreshVisualization();
@@ -129,9 +158,10 @@ export class UI {
     }
 
     updateVizOptions(vizType) {
+        // Grab the container element
         const optionsContainer = document.getElementById("options-container");
         optionsContainer.innerHTML = "";
-
+        // Trying to hardcode the viz option choices
         const optionsConfig = {
             bar: [
                 { label: "X Axis", source: this.categorical },
@@ -163,6 +193,8 @@ export class UI {
 
         const options = optionsConfig[vizType];
 
+        // DERIVED FROM AYDEN HW 4
+        // DERIVED FROM https://stackoverflow.com/questions/7054187/dynamic-dropdown
         options.forEach(option => {
             if (!option.source || option.source.length === 0) {
                 console.warn(`No data available for ${option.label}`);
@@ -188,26 +220,32 @@ export class UI {
         });
     }
 
+    //
     refreshVisualization() {
+        // is the data loaded?
         if (!this.data) {
             console.warn("Data not loaded yet");
             return;
         }
 
+        // Prepare the data for visualization creation
         const selectedVizType = this.vizTypeSelect.value;
         const selectedInterval = this.intervals[this.currentIntervalIndex];
         const filteredData = filterByInterval(this.data, selectedInterval);
-
+        
+        // For safety
         if (filteredData.length === 0) {
-            d3.select(".visualization").html("<p>No data available for the selected interval.</p>");
+            d3.select(".visualization").html("<p>No data found!</p>");
             return;
         }
 
+        // Prepare the data for visualization creation
         const options = this.getSelectedOptions();
         createVisualization(selectedVizType, filteredData, options);
     }
 
     getSelectedOptions() {
+        // Dynamically go through and grab all of the selection elements so that the viz's have attributes to work with
         const options = {};
         const optionsContainer = document.getElementById("options-container");
         const selects = optionsContainer.querySelectorAll("select");
