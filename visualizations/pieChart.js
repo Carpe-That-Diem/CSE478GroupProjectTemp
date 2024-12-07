@@ -15,13 +15,13 @@ export function createPieChart(svg, data, options) {
     .attr("class", "tooltip")
     .style("opacity", 0)
     .style("display", "block")
-    .style("position", "absolute") 
+    .style("position", "absolute")
     .style("background-color", "rgba(0, 0, 0, 0.7)")
-    .style("color", "#fff") 
+    .style("color", "#fff")
     .style("padding", "10px")
     .style("border-radius", "5px")
-    .style("pointer-events", "none") 
-    .style("z-index", "10000"); 
+    .style("pointer-events", "none")
+    .style("z-index", "10000");
 
   const arc = d3.arc()
     .innerRadius(0)
@@ -42,15 +42,15 @@ export function createPieChart(svg, data, options) {
   const max = d3.max(values);
 
   const binScale = d3.scaleQuantize()
-    .domain([min, max]) 
+    .domain([min, max])
     .range(d3.range(numBins));
 
   const bins = new Array(numBins).fill(0);
   values.forEach(value => {
-    const binIndex = binScale(value); 
+    const binIndex = binScale(value);
     bins[binIndex] += 1;
   });
-    
+
   const totalDataPoints = values.length;
   const percentages = bins.map(binCount => (binCount / totalDataPoints) * 100);
 
@@ -64,51 +64,51 @@ export function createPieChart(svg, data, options) {
     key: binLabels[i],
     value: percentages[i]
   }));
-  
+
   console.log(pieData);
-  
+
   const arcs = g.selectAll(".arc")
     .data(pie(pieData))
     .enter().append("g")
     .attr("class", "arc");
 
-    
+
   arcs.append("path")
     .attr("d", arc)
-    .style("fill", (d, i) => color(i)) 
+    .style("fill", (d, i) => color(i))
     .style("stroke", "white")
     .style("stroke-width", "1px")
-    .style("opacity", 0.8)  
-    .on("mouseover", function(event,d) {
+    .style("opacity", 0.8)
+    .on("mouseover", function (event, d) {
       div.style("opacity", .9);
       div.html(
-          options.Value + ": " + d.data.key + "<br/>" +
-          "Percentage: " + d.data.value
+        options.Value + ": " + d.data.key + "<br/>" +
+        "Percentage: " + d.data.value
       )
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 10) + "px");
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
     })
-    .on("mousemove", d=> {
-        div.style("left", (event.pageX + 10) + "px")
-            .style("top", (event.pageY - 10) + "px")
-            div.style("opacity", .9);;
+    .on("mousemove", d => {
+      div.style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px")
+      div.style("opacity", .9);;
     })
     .on("mouseout", d => {
-        div.style("opacity", 0);
+      div.style("opacity", 0);
     });
 
-    svg.append("text")
-      .attr("x", width / 2)
-      .attr("y", 80)
-      .attr("text-anchor", "middle")
-      .style("font-size", "16px")
-      .style("font-weight", "bold")
-      .text(`Player ${options.Value} Distribution`);
-    svg.append("text")
-      .attr("x", width / 2)
-      .attr("y", 100)
-      .attr("text-anchor", "middle")
-      .style("font-size", "14px")
-      .text(`Hover over a slice of the chart for more info about the category`);
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", 80)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text(`Player ${options.Value} Distribution`);
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", 100)
+    .attr("text-anchor", "middle")
+    .style("font-size", "14px")
+    .text(`Hover over a slice of the chart for more info about the category`);
 }
 

@@ -27,7 +27,7 @@ export function createTreemapWithPie(svg, data, options) {
   const treemapData = Array.from(groupedData, ([key, group]) => {
     const size = group.length; // Block size based on the count of entries
     return size > 0 ? { key, size, details: group } : null; // Exclude empty groups
-}).filter(d => d !== null);
+  }).filter(d => d !== null);
 
 
   const root = d3.hierarchy({ name: "root", children: treemapData })
@@ -77,13 +77,13 @@ export function createTreemapWithPie(svg, data, options) {
     const details = d.data.details;
     const pieData = d3.group(details, item => item[options["Category"]]);
     const aggregatedPieData = Array.from(pieData, ([key, group]) => ({
-        key,
-        value: d3.sum(group, g => +g[options["Value"]])
+      key,
+      value: d3.sum(group, g => +g[options["Value"]])
     })).filter(d => d.value > 0); // Filter out zero values
 
     // Check if there are any valid values left after filtering
     if (aggregatedPieData.length === 0) {
-        return; // Skip drawing the pie chart if no valid slices
+      return; // Skip drawing the pie chart if no valid slices
     }
 
     // Pie Chart
@@ -91,32 +91,30 @@ export function createTreemapWithPie(svg, data, options) {
     const arc = d3.arc().innerRadius(0).outerRadius(radius);
 
     const pieGroup = group.append("g")
-        .attr("transform", `translate(${rectWidth / 2}, ${rectHeight / 2})`);
+      .attr("transform", `translate(${rectWidth / 2}, ${rectHeight / 2})`);
 
     pieGroup.selectAll("path")
-        .data(pie(aggregatedPieData))
-        .enter()
-        .append("path")
-        .attr("d", arc)
-        .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
-        .attr("stroke", "white")
-        .attr("stroke-width", 1)
-        .on("mouseover", (event, d) => {
-            tooltip.transition().duration(200).style("opacity", 1);
-            tooltip.html(`
+      .data(pie(aggregatedPieData))
+      .enter()
+      .append("path")
+      .attr("d", arc)
+      .attr("fill", (d, i) => d3.schemeCategory10[i % 10])
+      .attr("stroke", "white")
+      .attr("stroke-width", 1)
+      .on("mouseover", (event, d) => {
+        tooltip.transition().duration(200).style("opacity", 1);
+        tooltip.html(`
               <strong>Category:</strong> ${d.data.key}<br>
               <strong>${options["Value"]} Value:</strong> ${d.data.value}
 
             `)
-              .style("left", `${event.pageX + 10}px`)
-              .style("top", `${event.pageY}px`);
-        })
-        .on("mouseout", () => {
-            tooltip.transition().duration(200).style("opacity", 0);
-        });
-});
-
-
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY}px`);
+      })
+      .on("mouseout", () => {
+        tooltip.transition().duration(200).style("opacity", 0);
+      });
+  });
 
   // Add Chart Title
   svg.append("text")

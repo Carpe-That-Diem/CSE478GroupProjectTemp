@@ -12,14 +12,14 @@ export function filterByInterval(data, interval) {
         const seasonStartYear = Number(row.Season.split("-")[0]);
 
         if (seasonStartYear >= startYear && seasonStartYear < endYear) {
-            filteredData.push(row); 
+            filteredData.push(row);
         }
     }
 
     filteredData.sort((rowA, rowB) => {
         const yearA = Number(rowA.Season.split("-")[0]);
         const yearB = Number(rowB.Season.split("-")[0]);
-        return yearA - yearB; 
+        return yearA - yearB;
     });
 
     return filteredData;

@@ -42,12 +42,12 @@ export class UI {
                 body: "This era cemented Manchester City’s place among the footballing elite. The 2022 signing of Erling Haaland added a prolific scorer to an already world-class squad. In 2023, City achieved a historic Treble, winning the Premier League, FA Cup, and their first UEFA Champions League title. These accomplishments underscored their dominance and marked one of the most successful periods in the club’s history."
             }
         };
-        
+
     }
 
     initializeYearNavigation() {
         this.updateYearDisplay();
-    
+
         if (this.prevButton && this.nextButton) {
             this.prevButton.addEventListener("click", () => {
                 if (this.currentIntervalIndex > 0) {
@@ -56,7 +56,7 @@ export class UI {
                     this.refreshVisualization();
                 }
             });
-    
+
             this.nextButton.addEventListener("click", () => {
                 if (this.currentIntervalIndex < this.intervals.length - 1) {
                     this.currentIntervalIndex++;
@@ -66,63 +66,61 @@ export class UI {
             });
         }
     }
-    
+
     updateYearDisplay() {
         if (this.yearDisplay) {
             this.yearDisplay.textContent = this.intervals[this.currentIntervalIndex];
         }
-    
+
         // Update heading and body text dynamically
         const interval = this.intervals[this.currentIntervalIndex];
         const content = this.intervalContent[interval];
-        
+
         const headingElement = document.querySelector(".heading-text h2");
         const bodyElement = document.querySelector(".heading-text p");
-    
+
         if (content) {
             headingElement.textContent = content.heading;
             bodyElement.textContent = content.body;
         }
-    
+
         if (this.prevButton && this.nextButton) {
             this.prevButton.style.visibility = this.currentIntervalIndex === 0 ? "hidden" : "visible";
             this.nextButton.style.visibility = this.currentIntervalIndex === this.intervals.length - 1 ? "hidden" : "visible";
         }
     }
-    
-    
+
     initializeVisualizationDropdown() {
         if (this.vizTypeSelect) {
             this.vizTypeSelect.addEventListener("change", () => {
                 const selectedVizType = this.vizTypeSelect.value;
-    
+
                 if (selectedVizType === "default") {
                     // Clear visualization if "Please choose option" is selected
                     d3.select(".visualization").selectAll("*").remove();; // Remove all child elements from the visualization area
                     return;
                 }
-    
+
                 this.updateVizOptions(selectedVizType);
                 this.refreshVisualization();
             });
         }
-    
+
         document.getElementById("options-container").addEventListener("change", () => {
             this.refreshVisualization();
         });
-    
+
         // Initial data load
         this.loadData();
     }
-    
-    
+
     loadData() {
         loadCSVData("./data/Manchester_City_Standard_Stats_By_Season.csv", (data) => {
             this.data = data;
             const { categorical, numerical } = identifyAttributes(data);
             this.categorical = categorical;
             this.numerical = numerical;
-            
+
             // Initial visualization setup
             const selectedVizType = this.vizTypeSelect.value;
             this.updateVizOptions(selectedVizType);
@@ -132,65 +130,63 @@ export class UI {
 
     updateVizOptions(vizType) {
         const optionsContainer = document.getElementById("options-container");
-        optionsContainer.innerHTML = ""; 
-      
+        optionsContainer.innerHTML = "";
+
         const optionsConfig = {
-          bar: [
-            { label: "X Axis", source: this.categorical },
-            { label: "Y Axis", source: this.numerical }
-          ],
-          scatter: [
-            { label: "X Axis", source: this.numerical },
-            { label: "Y Axis", source: this.numerical },
-            { label: "Color", source: this.categorical }
-          ],
-          pie: [
-            { label: "Value", source: this.numerical }
-          ],
-          innovative: [
-            { label: "Group By", source: this.categorical },
-            { label: "Category", source: this.categorical },
-            { label: "Value", source: this.numerical }
-          ],
-          stacked: [
-            { label: "Group By", source: this.categorical },
-            { label: "Stack By", source: this.categorical },
-            { label: "Values", source: this.numerical }
-          ],
-          box: [
-            { label: "Group", source: this.categorical },
-            { label: "Values", source: this.numerical }
-          ]
+            bar: [
+                { label: "X Axis", source: this.categorical },
+                { label: "Y Axis", source: this.numerical }
+            ],
+            scatter: [
+                { label: "X Axis", source: this.numerical },
+                { label: "Y Axis", source: this.numerical },
+                { label: "Color", source: this.categorical }
+            ],
+            pie: [
+                { label: "Value", source: this.numerical }
+            ],
+            innovative: [
+                { label: "Group By", source: this.categorical },
+                { label: "Category", source: this.categorical },
+                { label: "Value", source: this.numerical }
+            ],
+            stacked: [
+                { label: "Group By", source: this.categorical },
+                { label: "Stack By", source: this.categorical },
+                { label: "Values", source: this.numerical }
+            ],
+            box: [
+                { label: "Group", source: this.categorical },
+                { label: "Values", source: this.numerical }
+            ]
         };
-      
+
         const options = optionsConfig[vizType];
-      
+
         options.forEach(option => {
-          if (!option.source || option.source.length === 0) {
-            console.warn(`No data available for ${option.label}`);
-            return;
-          }
-          const div = document.createElement("div");
-          div.classList.add("option");
-      
-          const label = document.createElement("label");
-          label.textContent = option.label;
-      
-          const select = document.createElement("select");
-          option.source.forEach(value => {
-            const opt = document.createElement("option");
-            opt.value = value;
-            opt.textContent = value;
-            select.appendChild(opt);
-          });
-      
-          div.appendChild(label);
-          div.appendChild(select);
-          optionsContainer.appendChild(div);
+            if (!option.source || option.source.length === 0) {
+                console.warn(`No data available for ${option.label}`);
+                return;
+            }
+            const div = document.createElement("div");
+            div.classList.add("option");
+
+            const label = document.createElement("label");
+            label.textContent = option.label;
+
+            const select = document.createElement("select");
+            option.source.forEach(value => {
+                const opt = document.createElement("option");
+                opt.value = value;
+                opt.textContent = value;
+                select.appendChild(opt);
+            });
+
+            div.appendChild(label);
+            div.appendChild(select);
+            optionsContainer.appendChild(div);
         });
-      }
-      
-      
+    }
 
     refreshVisualization() {
         if (!this.data) {
