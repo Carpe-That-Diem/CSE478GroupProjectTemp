@@ -1,54 +1,55 @@
 export function createStackedAreaChart(svg, data, options) {
-  const margin = { top: 40, right: 150, bottom: 120, left: 60 }; // Increased bottom margin
+
+  // init the margin here
+  const margin = { top: 40, right: 150, bottom: 120, left: 60 }; 
+  // read the width/ height from svg
   const width = +svg.attr("width") - margin.left - margin.right;
   const height = +svg.attr("height") - margin.top - margin.bottom;
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-  // Group the data by the selected category
+  // group the data first
   const groupedData = d3.group(data, d => d[options["Group By"]]);
 
-  // Get unique categories for stacking
+  // get all unique category
   const categories = Array.from(new Set(data.map(d => d[options["Stack By"]])));
 
-  // Prepare data for stacking
   const stackData = Array.from(groupedData, ([key, values]) => {
     const obj = { [options["Group By"]]: key };
     categories.forEach(category => {
       const value = values.find(v => v[options["Stack By"]] === category);
-      obj[category] = value ? +value[options["Values"]] : 0;
+      if (value) {
+        obj[category] = +value[options["Values"]];
+      } else {
+        obj[category] = 0;
+      }
     });
     return obj;
   });
 
-  // Sort data by the "Group By" field
   stackData.sort((a, b) => d3.ascending(a[options["Group By"]], b[options["Group By"]]));
 
-  // Create color scale
+  // color scale and init x and y axis
   const color = d3.scaleOrdinal(d3.schemeCategory10).domain(categories);
-
-  // Create scales
   const x = d3.scaleBand()
     .range([0, width])
-    .padding(0.2) // Add padding for better spacing
+    .padding(0.2)
     .domain(stackData.map(d => d[options["Group By"]]));
 
   const y = d3.scaleLinear()
     .range([height, 0])
     .domain([0, d3.max(stackData, d => d3.sum(categories, c => d[c]))]).nice();
 
-  // Stack the data
   const stack = d3.stack().keys(categories);
   const stackedData = stack(stackData);
 
-  // Create area generator
+  // init and generate the area
   const area = d3.area()
-    .x(d => x(d.data[options["Group By"]]) + x.bandwidth() / 2) // Center within the band
+    .x(d => x(d.data[options["Group By"]]) + x.bandwidth() / 2)
     .y0(d => y(d[0]))
     .y1(d => y(d[1]));
 
-  // Add stacked areas
   g.selectAll(".area")
     .data(stackedData)
     .enter().append("path")
@@ -57,7 +58,7 @@ export function createStackedAreaChart(svg, data, options) {
     .style("fill", d => color(d.key))
     .style("opacity", 0.7);
 
-  // Add X axis
+  // deal w/ axises
   g.append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x))
@@ -65,19 +66,15 @@ export function createStackedAreaChart(svg, data, options) {
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
     .attr("dy", ".15em")
-    .attr("transform", "rotate(-30)"); // Rotate ticks for readability
-
-  // Add Y axis
+    .attr("transform", "rotate(-30)");
   g.append("g")
     .call(d3.axisLeft(y));
 
-  // Add X-axis label
+  // add labels for axises
   svg.append("text")
     .attr("transform", `translate(${width / 2 + margin.left},${height + margin.top + 80})`) // Adjust vertical position
     .style("text-anchor", "middle")
     .text(options["Group By"]);
-
-  // Add Y-axis label
   svg.append("text")
     .attr("transform", "rotate(-90)")
     .attr("y", margin.left / 4)
@@ -86,7 +83,7 @@ export function createStackedAreaChart(svg, data, options) {
     .style("text-anchor", "middle")
     .text(options["Values"]);
 
-  // Add legend to the side
+  // legend on left
   const legend = svg.append("g")
     .attr("font-family", "sans-serif")
     .attr("font-size", 10)
@@ -108,7 +105,7 @@ export function createStackedAreaChart(svg, data, options) {
     .attr("dy", "0.32em")
     .text(d => d);
 
-  // Add title
+  // title
   svg.append("text")
     .attr("x", (width / 2) + margin.left)
     .attr("y", margin.top / 2)
