@@ -27,23 +27,23 @@ export class UI {
         this.intervalContent = {
             "2003-2007": {
                 heading: "Rebuilding and Stabilization",
-                body: "This era marked Manchester City’s journey to rebuild and find stability after years of inconsistency. In 1999, the club escaped the third tier of English football, achieving promotion to the First Division (now EFL Championship), and by 2000, they were back in the Premier League. However, City struggled to compete consistently at the highest level, often finishing in the lower half of the table. Lacking squad depth and resources, they remained a largely mediocre side, laying the groundwork for future growth."
+                body: "This era marked Manchester City's journey to rebuild and find stability after years of inconsistency. In 1999, the club escaped the third tier of English football, achieving promotion to the First Division (now EFL Championship), and by 2000, they were back in the Premier League. However, City struggled to compete consistently at the highest level, often finishing in the lower half of the table. Lacking squad depth and resources, they remained a largely mediocre side, laying the groundwork for future growth."
             },
             "2007-2011": {
                 heading: "Investment and Innovation",
-                body: "The Abu Dhabi United Group's purchase of Manchester City in 2008 was a turning point, bringing unprecedented investment into the club. Key signings like Carlos Tevez in 2009 and Roberto Mancini's appointment as manager that same year signaled the start of an ambitious project. In 2011, City won their first major trophy in decades with an FA Cup victory, and the signing of Sergio Agüero that summer added another star to their growing roster. This period set the stage for the club’s rise to elite status in football."
+                body: "The Abu Dhabi United Group's purchase of Manchester City in 2008 was a turning point, bringing unprecedented investment into the club. Key signings like Carlos Tevez in 2009 and Roberto Mancini's appointment as manager that same year signaled the start of an ambitious project. In 2011, City won their first major trophy in decades with an FA Cup victory, and the signing of Sergio Agüero that summer added another star to their growing roster. This period set the stage for the club's rise to elite status in football."
             },
             "2011-2015": {
                 heading: "Transformation and Rise",
-                body: "Under Mancini and later Manuel Pellegrini, Manchester City solidified themselves as a powerhouse. The dramatic 2011/2012 Premier League title win, sealed by Agüero’s iconic last-minute goal, ended a 44-year drought. Pellegrini’s arrival in 2013 introduced a more attacking style, and by 2015, the signing of Kevin De Bruyne showcased City’s intent to compete at the highest level. This era was pivotal in establishing City as consistent contenders in both domestic and European competitions."
+                body: "Under Mancini and later Manuel Pellegrini, Manchester City solidified themselves as a powerhouse. The dramatic 2011/2012 Premier League title win, sealed by Agüero's iconic last-minute goal, ended a 44-year drought. Pellegrini's arrival in 2013 introduced a more attacking style, and by 2015, the signing of Kevin De Bruyne showcased City's intent to compete at the highest level. This era was pivotal in establishing City as consistent contenders in both domestic and European competitions."
             },
             "2015-2019": {
                 heading: "Performance and Excellence",
-                body: "Pep Guardiola’s appointment in 2016 ushered in a period of dominance defined by tactical brilliance and record-breaking achievements. In the 2017/2018 season, City became “Centurions,” amassing 100 points—a feat rarely achieved in football history. Guardiola’s team combined style with substance, regularly setting new benchmarks for success in the Premier League and beyond."
+                body: "Pep Guardiola's appointment in 2016 ushered in a period of dominance defined by tactical brilliance and record-breaking achievements. In the 2017/2018 season, City became “Centurions,” amassing 100 points—a feat rarely achieved in football history. Guardiola's team combined style with substance, regularly setting new benchmarks for success in the Premier League and beyond."
             },
             "2019-2023": {
                 heading: "Leadership and Success",
-                body: "This era cemented Manchester City’s place among the footballing elite. The 2022 signing of Erling Haaland added a prolific scorer to an already world-class squad. In 2023, City achieved a historic Treble, winning the Premier League, FA Cup, and their first UEFA Champions League title. These accomplishments underscored their dominance and marked one of the most successful periods in the club’s history."
+                body: "This era cemented Manchester City's place among the footballing elite. The 2022 signing of Erling Haaland added a prolific scorer to an already world-class squad. In 2023, City achieved a historic Treble, winning the Premier League, FA Cup, and their first UEFA Champions League title. These accomplishments underscored their dominance and marked one of the most successful periods in the club's history."
             }
         };
     }
@@ -220,7 +220,6 @@ export class UI {
         });
     }
 
-    //
     refreshVisualization() {
         // is the data loaded?
         if (!this.data) {
