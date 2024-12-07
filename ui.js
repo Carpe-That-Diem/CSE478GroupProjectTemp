@@ -117,7 +117,7 @@ export class UI {
     
     
     loadData() {
-        loadCSVData("/data/Manchester_City_Standard_Stats_By_Season.csv", (data) => {
+        loadCSVData("./data/Manchester_City_Standard_Stats_By_Season.csv", (data) => {
             this.data = data;
             const { categorical, numerical } = identifyAttributes(data);
             this.categorical = categorical;
