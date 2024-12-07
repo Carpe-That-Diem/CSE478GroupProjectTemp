@@ -13,15 +13,12 @@ export function createPieChart(svg, data, options) {
 
   var div = d3.select("body").append("div")
     .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("display", "block")
     .style("position", "absolute")
-    .style("background-color", "rgba(0, 0, 0, 0.7)")
-    .style("color", "#fff")
-    .style("padding", "10px")
+    .style("background", "#f9f9f9")
+    .style("border", "1px solid white")
     .style("border-radius", "5px")
-    .style("pointer-events", "none")
-    .style("z-index", "10000");
+    .style("padding", "10px")
+    .style("opacity", 0);
 
   const arc = d3.arc()
     .innerRadius(0)
