@@ -1,7 +1,7 @@
 export function createPieChart(svg, data, options) {
-  const width = +svg.attr("width") - 50;
-  const height = +svg.attr("height") - 50;
-  const radius = Math.min(width, height) / 2;
+  const width = +svg.attr("width") - 100;
+  const height = +svg.attr("height") - 100;
+  const radius = Math.min(width, height) / 3;
 
   const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -53,10 +53,10 @@ export function createPieChart(svg, data, options) {
   // Create a scrollable container for the legend
   // Create a scrollable container using foreignObject (HTML container inside SVG)
   const legendContainer = svg.append("foreignObject")
-    .attr("x", width - 300)       // Position the container group for the legend
-    .attr("y", 20)
-    .attr("width", 350)           // Set the width for the scrollable area
-    .attr("height", 460)          // Set the max height for the scrollable area
+    .attr("x", width - 500)       // Position the container group for the legend
+    .attr("y", 70)
+    .attr("width", 500)           // Set the width for the scrollable area
+    .attr("height", height-100)          // Set the max height for the scrollable area
     .style("overflow", "hidden"); // Hide overflow for the outer container
 
   // Append a div inside the foreignObject to hold the legend items
@@ -64,7 +64,7 @@ export function createPieChart(svg, data, options) {
       .style("height", "100%")        // Take up all available height
       .style("overflow-y", "scroll")    // Enable vertical scrolling within the div
       .style("display", "block")      // Ensure div behaves as block-level element
-      .style("max-height", "460px")   // Limit the height to the container height
+      .style("max-height", height-100)   // Limit the height to the container height
       .style("width", "100%");        // Make div take up the full width of the foreignObject
 
   // Create the legend items
@@ -75,7 +75,7 @@ export function createPieChart(svg, data, options) {
       .style("display", "flex")          // Use flexbox layout for color square and text
       .style("align-items", "center")    // Align items vertically
       .style("margin-bottom", "5px")    // Add space between items
-      .style("margin-left", "100px");
+      .style("margin-left", "200px");
 
   // Add color squares and labels
   legend.append("div")  // Color square
