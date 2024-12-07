@@ -1,5 +1,17 @@
+/* Define variables for reusability */
+:root {
+    --primary-color: #007BFF;
+    --hover-color: #0056b3;
+    --background-color: white;
+    --text-color: black;
+}
+
+/* General styles */
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .container {
@@ -28,8 +40,10 @@ body {
 .sidebar,
 #viz-specific-options {
     padding: 10px;
-    background-color: white;
-    color: black;
+    border: 1px solid var(--primary-color);
+    border-radius: 5px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .title-navigation {
@@ -44,8 +58,17 @@ body {
     font-size: 24px;
     background: none;
     border: none;
-    color: #6CABDD;
+    color: var(--primary-color);
     cursor: pointer;
+}
+
+.nav-button:hover {
+    color: var(--hover-color);
+}
+
+.heading-text,
+.sidebar {
+    box-sizing: border-box;
 }
 
 .heading-text {
@@ -53,12 +76,14 @@ body {
 }
 
 .sidebar {
+    flex-direction: column;
     margin-bottom: 20px;
 }
 
 .sidebar h3 {
+    margin: 0 0 15px;
     font-size: 16px;
-    color: #6CABDD;
+    color: var(--primary-color);
     font-weight: bold;
     text-align: center;
 }
@@ -69,23 +94,26 @@ body {
     width: 100%;
     padding: 5px;
     font-size: 14px;
-    background-color: white;
-    color: black;
+    border: 1px solid var(--primary-color);
+    border-radius: 3px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .btn {
     margin: 10px 0;
     padding: 10px;
-    color: #6CABDD;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
     font-size: 16px;
     cursor: pointer;
-
-    background-color: white;
+    border-radius: 3px;
+    background-color: var(--background-color);
 }
 
 .btn:hover {
-    background-color: #6CABDD;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--background-color);
 }
 
 .visualization-area {
@@ -93,14 +121,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--primary-color);
     height: 800px;
 }
 
 .visualization {
     width: 100%;
     height: 100%;
-
-    background-color: white;
+    border: 1px solid var(--primary-color);
+    background-color: var(--background-color);
 }
 
 .option {
