@@ -34,11 +34,7 @@ export function createVisualization(vizType, data, options) {
             createBoxPlot(svg, data, options);
             break;
         default:
-            svg.append("text")
-                .attr("x", 400)
-                .attr("y", 250)
-                .attr("text-anchor", "middle")
-                .text("Default Selected");
+            console.log("DEFAULT SELECTED");
     }
 }
 
